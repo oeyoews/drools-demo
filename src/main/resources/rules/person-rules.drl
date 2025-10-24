@@ -1,13 +1,29 @@
-package rules
+package com.example.rules;
+import example.droolsdemo.model.Person;
+import org.slf4j.Logger;
+import example.droolsdemo.util.RuleUtils
 
-import example.droolsdemo.model.Person
+global Logger logger;
 
-// 规则1(CheckAdult)：年龄>=18岁则标记为成年
 rule "CheckAdult"
-    when
-        $person : Person( age > 18)
-    then
-        $person.setAdult(true);
-        $person.setAge(18);
-        System.out.println($person.getName() + " is an adult!");
+    enabled true // 是否启用规则， 默认启用
+    salience 10 // 优先级（优先级别高的先执行)
+//    timer
+    no-loop true
+when
+    $p: Person(age >= 18, adult == false)  // 匹配年龄>=18且未标记成年的人
+then
+    $p.setAdult(true);
+    logger.info("{} 已成年",$p.getName());
+    System.out.println($p.getName() + "状态：" + RuleUtils.getStatus(true));
+    update($p);  // 更新对象，触发依赖此对象的其他规则
+end
+
+// 检查用户性别
+rule "CheckSex"
+    salience 15
+when
+    $p : Person(sex == "girl")
+then
+    logger.warn("{} 是一个女孩", $p.getName());
 end
