@@ -2,12 +2,12 @@ package rules
 
 import example.droolsdemo.model.Person
 
-// 规则文件示例：判断是否为成年人
-rule "Mark as Adult"
+// 规则1(CheckAdult)：年龄>=18岁则标记为成年
+rule "CheckAdult"
     when
-        $p : Person( age > 18)
+        $person : Person( age > 18)
     then
-        $p.setAdult(true);
-        $p.setAge(18);
-        System.out.println($p.getName() + " is an adult!");
+        $person.setAdult(true);
+        $person.setAge(18);
+        System.out.println($person.getName() + " is an adult!");
 end

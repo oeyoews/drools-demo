@@ -15,12 +15,13 @@ public class TestController {
 
     @GetMapping("/test")
     public String testDrools() {
-        Person p1 = new Person("Alice", 20);
+        Person p1 = new Person("张华", 20);
         Person p2 = new Person("Bob", 15);
 
+        // 将对象插入规则引擎
         kieSession.insert(p1);
         kieSession.insert(p2);
-        kieSession.fireAllRules();
+        kieSession.fireAllRules(); // 执行所有规则
 
         return p1 + " | " + p2;
     }

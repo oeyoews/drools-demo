@@ -1,27 +1,23 @@
 package example.droolsdemo.model;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class Person {
     private String name;
     private int age;
     private boolean adult;
 
-    public Person() {}
-
     public Person(String name, int age) {
         this.name = name;
         this.age = age;
+        this.adult = false;  // default value
     }
-
-    public String getName() { return name; }
-    public int getAge() { return age; }
-    public boolean isAdult() { return adult; }
-
-    public void setName(String name) { this.name = name; }
-    public void setAge(int age) { this.age = age; }
-    public void setAdult(boolean adult) { this.adult = adult; }
 
     @Override
     public String toString() {
-        return name + " (" + age + "): " + (adult ? "Adult" : "Not adult");
+        return name + " (" + age + "): " + (adult ? "已成年" : "未成年");
     }
 }
