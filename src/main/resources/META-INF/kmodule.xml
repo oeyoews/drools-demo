@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kmodule xmlns="http://www.drools.org/xsd/kmodule">
+<!-- 定义一个 KieBase（规则库），包含所有 classpath 下的规则文件 -->
+<kbase name="rulesKBase" packages="rules">
+    <!-- 定义一个默认会话 -->
+    <ksession name="ksession-rules" default="true"/>
+</kbase>
+</kmodule>
