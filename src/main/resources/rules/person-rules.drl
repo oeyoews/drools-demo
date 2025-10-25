@@ -1,9 +1,16 @@
 package com.example.rules;
-import example.droolsdemo.model.Person;
-import org.slf4j.Logger;
-import example.droolsdemo.util.RuleUtils
 
-global Logger logger;
+// unit MeasurementUnit; // ??
+
+//declare
+
+// function
+
+// 全局对象
+global org.slf4j.Logger logger;
+
+import example.droolsdemo.model.Person;
+import example.droolsdemo.util.RuleUtils
 
 rule "CheckAdult"
     enabled true // 是否启用规则， 默认启用
@@ -26,4 +33,5 @@ when
     $p : Person(sex == "girl")
 then
     logger.warn("{} 是一个女孩", $p.getName());
+    drools.halt(); // 立即终止后面所有规则的执行
 end

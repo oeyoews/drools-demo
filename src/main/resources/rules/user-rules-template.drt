@@ -1,0 +1,22 @@
+// user-rules-template.drl
+package com.example.rules;
+
+import com.example.User; // 导入业务实体类
+
+// 模板定义
+template header
+UserRuleTemplate  // 模板名称
+
+rule "UserRule_@{id}"
+when
+    $user : User(age > @{minAge}, status == "@{status}")
+then
+    System.out.println("触发规则: " + @{id} + "，用户年龄: " + $user.getAge());
+end template
+
+// 数据（对应模板中的变量：id, minAge, status）
+data
+1, 18, "ACTIVE"
+2, 30, "INACTIVE"
+3, 25, "ACTIVE"
+end data

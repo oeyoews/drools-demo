@@ -62,6 +62,13 @@
 			<version>${drools.version}</version>
 		</dependency>
 
+		<!-- Drools templates (支持 DRL 模板) -->
+		<dependency>
+			<groupId>org.drools</groupId>
+			<artifactId>drools-templates</artifactId>
+			<version>${drools.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.kie</groupId>
 			<artifactId>kie-api</artifactId>
