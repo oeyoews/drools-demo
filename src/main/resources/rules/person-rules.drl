@@ -1,28 +1,51 @@
+// @see-also(drools 8): https://docs.drools.org/8.44.0.Final/drools-docs/drools/language-reference/index.html
 package com.example.rules;
 
-// unit MeasurementUnit; // ??
+// drl 核心是条件匹配, 通过条件的设计实现逻辑互联, 从而来实现if-else分支逻辑
+unit PersonRules;
 
-//declare
+// 关键词 function
 
-// function
+// Example01: 一般不在drl里面写这部分
+declare Animal
+    name: String
+    type: String
+    age: Number
+end
 
 // 全局对象
 global org.slf4j.Logger logger;
 
+// import 同 java import
 import example.droolsdemo.model.Person;
 import example.droolsdemo.util.RuleUtils
 
+// @NOTE: 需要唯一
 rule "CheckAdult"
+    dialect "JAVA" // JAVA || MVEL
     enabled true // 是否启用规则， 默认启用
     salience 10 // 优先级（优先级别高的先执行)
 //    timer
     no-loop true
 when
-    $p: Person(age >= 18, adult == false)  // 匹配年龄>=18且未标记成年的人
+    // LHS
+    $p: Person(age >= 18 && age <=9099, adult == false)  // 匹配年龄>=18且未标记成年的人
+    // exists(Custom(vip == true))
+// not 语法
+//when
+//    not $p: Person(age >= 18, adult == false)  // 匹配年龄>=18且未标记成年的人
 then
+    // RHS
+    // yourMethodHere($p)
+    // 下面所有的步骤可以单独封装成方法调用.
     $p.setAdult(true);
     logger.info("{} 已成年",$p.getName());
     System.out.println($p.getName() + "状态：" + RuleUtils.getStatus(true));
+    // Animal dog = new Animal();
+    // dog.setAge(99);
+    // insert方法的作用是向工作内存中插入数据，并让相关的规则重新匹配。
+    // insert(dog)
+    // update方法的作用是更新工作内存中的数据，并让相关的规则重新匹配。 （要避免死循环）
     update($p);  // 更新对象，触发依赖此对象的其他规则
 end
 

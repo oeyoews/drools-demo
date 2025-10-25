@@ -32,6 +32,7 @@ public class TestController {
         List<Person> people = Arrays.asList(p1, p2, p3);
         people.forEach(kieSession::insert);
         int firedRules = kieSession.fireAllRules(); // 执行所有规则
+        kieSession.dispose();
         System.out.println("执行了 " + firedRules + " 条规则");
         return p1 + " | " + p2 + " | " + p3;
     }
