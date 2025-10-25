@@ -22,7 +22,6 @@ import example.droolsdemo.util.RuleUtils
 
 // @NOTE: 需要唯一
 rule "CheckAdult"
-    dialect "JAVA" // JAVA || MVEL
     enabled true // 是否启用规则， 默认启用
     salience 10 // 优先级（优先级别高的先执行)
 //    timer

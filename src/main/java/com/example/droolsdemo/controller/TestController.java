@@ -1,5 +1,6 @@
 package example.droolsdemo.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.kie.api.runtime.KieSession;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
+@Slf4j
 @RestController
 public class TestController {
     private final KieSession kieSession;
@@ -32,8 +34,8 @@ public class TestController {
         List<Person> people = Arrays.asList(p1, p2, p3);
         people.forEach(kieSession::insert);
         int firedRules = kieSession.fireAllRules(); // 执行所有规则
+        log.info("fired rules: {}", firedRules);
         kieSession.dispose();
-        System.out.println("执行了 " + firedRules + " 条规则");
         return p1 + " | " + p2 + " | " + p3;
     }
 }
