@@ -93,11 +93,24 @@ public class DroolsConfig {
         // Drools 的构建结果由 Results 对象包含
         org.kie.api.builder.Results results = kieBuilder.getResults();
         if (results.hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
-            // 如果编译失败，打印所有错误信息
+            // 如果编译失败，打印所有错误信息但不抛出异常
+            System.err.println("⚠️ Drools 规则编译失败，但应用将继续启动（使用空规则容器）");
+            System.err.println("请检查规则文件语法：");
             results.getMessages(org.kie.api.builder.Message.Level.ERROR).forEach(msg -> {
-                System.err.println("✗ 编译错误: " + msg.getText());
+                System.err.println("  ✗ [错误] " + msg.getText());
             });
-            throw new IllegalStateException("Drools 规则编译失败，请检查规则文件语法");
+
+            // 警告信息（可选）
+            if (results.hasMessages(org.kie.api.builder.Message.Level.WARNING)) {
+                System.out.println("警告信息：");
+                results.getMessages(org.kie.api.builder.Message.Level.WARNING).forEach(msg -> {
+                    System.err.println("  ⚠️  [警告] " + msg.getText());
+                });
+            }
+
+            // 返回一个空的 KieContainer，让应用继续运行
+            System.out.println("注意：将使用空规则容器，规则功能将不可用");
+            return kieServices.getKieClasspathContainer();
         }
         System.out.println("✓ Drools 规则编译成功");
 
@@ -120,7 +133,7 @@ public class DroolsConfig {
      * 注意：如果修改为多例（PROTOTYPE），需要在用完后续手动调用 dispose() 释放资源。
      *
      * @param kieContainer 规则容器，由上一个 Bean 方法创建
-     * @return KieSession 规则执行会话
+     * @return KieSession 规则执行会话，如果规则编译失败则返回空会话
      *
      * @see KieSession#insert(Object)
      * @see KieSession#setGlobal(String, Object)
@@ -128,12 +141,31 @@ public class DroolsConfig {
      */
     @Bean
     public KieSession kieSession(KieContainer kieContainer) {
-        // 从规则容器创建新的会话
-        // 每个会话都有独立的工作内存，可以插入不同的数据并执行规则
-        KieSession session = kieContainer.newKieSession();
+        try {
+            // 从规则容器创建新的会话
+            // 每个会话都有独立的工作内存，可以插入不同的数据并执行规则
+            KieSession session = kieContainer.newKieSession();
 
-        System.out.println("KieSession 已创建");
+            System.out.println("✓ KieSession 已创建");
+            return session;
 
-        return session;
+        } catch (Exception e) {
+            // 如果创建失败（例如规则编译失败导致容器异常），记录错误但不抛出异常
+            System.err.println("⚠️ KieSession 创建失败: " + e.getMessage());
+            System.err.println("⚠️ 将创建空的 KieSession（无规则可用）");
+
+            // 尝试获取一个空的 KieSession
+            try {
+                KieServices kieServices = KieServices.Factory.get();
+                KieContainer defaultContainer = kieServices.getKieClasspathContainer();
+                KieSession emptySession = defaultContainer.newKieSession();
+                System.out.println("✓ 空 KieSession 已创建（无规则）");
+                return emptySession;
+            } catch (Exception ex) {
+                System.err.println("⚠️ 无法创建 KieSession，应用可能需要重启");
+                // 重新抛出异常，让 Spring 知道 Bean 创建失败
+                throw new IllegalStateException("无法创建 KieSession: " + e.getMessage(), e);
+            }
+        }
     }
 }

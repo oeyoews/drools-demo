@@ -38,6 +38,14 @@ public class TestController {
         long startTime = System.currentTimeMillis();
 
         try {
+            // 检查 KieSession 是否为 null
+            if (kieSession == null) {
+                log.warn("KieSession 为 null，规则编译可能失败，应用无法执行规则");
+                long executionTime = System.currentTimeMillis() - startTime;
+                RuleTestData data = new RuleTestData(0, null, executionTime);
+                return new RuleTestResponse(false, "规则引擎未初始化，可能是规则文件编译失败。请检查规则文件语法。", data, API_VERSION);
+            }
+
             // 为 Drools 规则中的全局变量注入 Logger 实例
             kieSession.setGlobal("logger", log);
 
