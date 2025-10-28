@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>DRL 规则编辑器</title>
+  <script src="/lib/css/tw.js"></script>
+  <style>
+    /* 代码高亮样式 */
+    .syntax-keyword { color: #8e44ad; font-weight: bold; }
+    .syntax-string { color: #2ecc71; }
+    .syntax-comment { color: #7f8c8d; font-style: italic; }
+    .syntax-rule-name { color: #e74c3c; font-weight: bold; }
+    .syntax-operator { color: #3498db; }
+
+    /* 滚动条样式 */
+    #codePreview::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    #codePreview::-webkit-scrollbar-track {
+      background: #1a202c;
+    }
+    #codePreview::-webkit-scrollbar-thumb {
+      background: #4a5568;
+      border-radius: 4px;
+    }
+    #codePreview::-webkit-scrollbar-thumb:hover {
+      background: #5a6578;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen p-4">
+  <div class="max-w-7xl mx-auto space-y-4">
+    <!-- 标题 -->
+    <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-800">DRL 规则编辑器</h1>
+          <p class="text-sm text-gray-600">可视化生成 Drools 规则文件</p>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button id="sampleBtn" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition font-medium text-sm">
+            加载示例
+          </button>
+          <button id="downloadBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-medium text-sm">
+            下载 DRL 文件
+          </button>
+          <button id="copyBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium text-sm">
+            复制代码
+          </button>
+          <a href="/" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition font-medium text-sm">
+            返回首页
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <!-- 左侧：规则配置表单 -->
+      <div class="space-y-4">
+        <!-- 全局配置 -->
+        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-700 mb-3">全局配置</h2>
+          <div class="space-y-3">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">包名 (package)</label>
+              <input type="text" id="packageName" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="com.example.rules">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Unit 名称 (可选)</label>
+              <input type="text" id="unitName" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如: PersonRules">
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">导入语句 (每行一个)</label>
+              <textarea id="imports" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;import com.example.droolsdemo.model.Person;&#10;import com.example.droolsdemo.util.RuleUtils;&#10;import java.util.List;"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">全局变量 (每行一个)</label>
+              <textarea id="globals" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;global org.slf4j.Logger logger;&#10;global java.util.Map dataMap;"></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">声明类型 (declare, 可选)</label>
+              <textarea id="declarations" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;declare Animal&#10;    name: String&#10;    age: int&#10;end"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- 规则列表 -->
+        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <div class="flex justify-between items-center mb-3">
+            <h2 class="text-lg font-semibold text-gray-700">规则列表</h2>
+            <button id="addRuleBtn" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+              + 添加规则
+            </button>
+          </div>
+          <div id="rulesContainer" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- 右侧：代码预览和帮助 -->
+      <div class="space-y-4">
+        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-700 mb-3">DRL 代码预览</h2>
+          <pre id="codePreview" class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm font-mono min-h-[400px] max-h-[600px]"></pre>
+        </div>
+
+        <!-- 帮助说明 -->
+        <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-4">
+          <div class="flex items-start">
+            <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            <div class="text-sm text-blue-800">
+              <p class="font-semibold mb-1">使用提示：</p>
+              <ul class="list-disc list-inside space-y-1 text-xs">
+                <li><strong>包名 (Package):</strong> 定义规则所属的包</li>
+                <li><strong>Unit 名称:</strong> 单元名称，用于规则组织</li>
+                <li><strong>导入 (Import):</strong> 导入需要的Java类</li>
+                <li><strong>全局变量 (Global):</strong> 定义全局对象，如logger</li>
+                <li><strong>Salience:</strong> 规则优先级，数值越大越先执行</li>
+                <li><strong>No-Loop:</strong> 防止规则循环触发</li>
+                <li><strong>When:</strong> 规则条件（LHS - Left Hand Side）</li>
+                <li><strong>Then:</strong> 规则动作（RHS - Right Hand Side）</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 规则模板
+    const ruleTemplate = {
+      name: 'rule_' + Date.now(),
+      enabled: true,
+      salience: 10,
+      noLoop: false,
+      lockOnActive: false,
+      when: '',
+      then: ''
+    };
+
+    let rules = [];
+
+    // 初始化
+    function init() {
+      loadRules();
+      addRule();
+      bindEvents();
+      updatePreview();
+    }
+
+    // 绑定事件
+    function bindEvents() {
+      // 全局配置更新
+      document.getElementById('packageName').addEventListener('input', updatePreview);
+      document.getElementById('unitName').addEventListener('input', updatePreview);
+      document.getElementById('imports').addEventListener('input', updatePreview);
+      document.getElementById('globals').addEventListener('input', updatePreview);
+      document.getElementById('declarations').addEventListener('input', updatePreview);
+
+      // 下载按钮
+      document.getElementById('downloadBtn').addEventListener('click', downloadDRL);
+
+      // 复制按钮
+      document.getElementById('copyBtn').addEventListener('click', copyCode);
+
+      // 添加规则按钮
+      document.getElementById('addRuleBtn').addEventListener('click', () => {
+        addRule();
+        renderRules();
+        updatePreview();
+      });
+
+      // 加载示例按钮
+      document.getElementById('sampleBtn').addEventListener('click', loadSample);
+    }
+
+    // 加载示例数据
+    function loadSample() {
+      // 设置全局配置
+      document.getElementById('packageName').value = 'com.example.rules';
+      document.getElementById('unitName').value = 'PersonRules';
+      document.getElementById('imports').value = 'import com.example.droolsdemo.model.Person;\nimport com.example.droolsdemo.util.RuleUtils;';
+      document.getElementById('globals').value = 'global org.slf4j.Logger logger;';
+      document.getElementById('declarations').value = '';
+
+      // 设置规则示例
+      rules = [
+        {
+          name: 'CheckAdult',
+          enabled: true,
+          salience: 10,
+          noLoop: true,
+          lockOnActive: false,
+          when: '    $p: Person($age: age >= 18)',
+          then: '    $p.setAdult(true);\n    logger.info("{} 已成年",$p.getName());\n    update($p);'
+        },
+        {
+          name: 'CheckSex',
+          enabled: true,
+          salience: 15,
+          noLoop: false,
+          lockOnActive: false,
+          when: '    $p : Person(sex == "girl")',
+          then: '    logger.warn("{} 是一个女孩", $p.getName());\n    $p.setSex("boy");\n    update($p);'
+        }
+      ];
+
+      renderRules();
+      updatePreview();
+    }
+
+    // 加载现有规则
+    function loadRules() {
+      // 示例规则
+      rules = [{
+        name: 'rule_01',
+        enabled: true,
+        salience: 10,
+        noLoop: false,
+        lockOnActive: false,
+        when: '    $p: Person($age: age >= 18)',
+        then: '    $p.setAdult(true);\n    update($p);'
+      }];
+    }
+
+    // 添加规则
+    function addRule() {
+      rules.push({...ruleTemplate});
+    }
+
+    // 渲染规则列表
+    function renderRules() {
+      const container = document.getElementById('rulesContainer');
+      container.innerHTML = '';
+
+      rules.forEach((rule, index) => {
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'border border-gray-300 rounded-lg p-4 bg-white shadow-sm hover:shadow transition';
+        ruleDiv.innerHTML = `
+          <div class="flex justify-between items-center mb-2">
+            <input type="text" class="rule-name flex-1 px-2 py-1 border border-gray-300 rounded text-sm" value="${rule.name}" data-index="${index}">
+            <button class="delete-rule ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600" data-index="${index}">删除</button>
+          </div>
+          <div class="space-y-2">
+            <div class="grid grid-cols-3 gap-2 text-xs">
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-1" data-index="${index}" data-key="enabled" ${rule.enabled ? 'checked' : ''}>
+                <span>启用</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-1" data-index="${index}" data-key="noLoop" ${rule.noLoop ? 'checked' : ''}>
+                <span>No-Loop</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-1" data-index="${index}" data-key="lockOnActive" ${rule.lockOnActive ? 'checked' : ''}>
+                <span>Lock-Active</span>
+              </label>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">优先级 (salience)</label>
+              <input type="number" class="w-full px-2 py-1 border border-gray-300 rounded text-sm" data-index="${index}" data-key="salience" value="${rule.salience}">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">When 条件</label>
+              <textarea rows="2" class="w-full px-2 py-1 border border-gray-300 rounded text-sm font-mono" data-index="${index}" data-key="when">${rule.when}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-gray-700 mb-1">Then 动作</label>
+              <textarea rows="3" class="w-full px-2 py-1 border border-gray-300 rounded text-sm font-mono" data-index="${index}" data-key="then">${rule.then}</textarea>
+            </div>
+          </div>
+        `;
+        container.appendChild(ruleDiv);
+      });
+
+      // 绑定删除按钮
+      container.querySelectorAll('.delete-rule').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          rules.splice(index, 1);
+          renderRules();
+          updatePreview();
+        });
+      });
+
+      // 绑定输入事件
+      container.querySelectorAll('input, textarea').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const key = e.target.dataset.key;
+          if (key) {
+            if (input.type === 'checkbox') {
+              rules[index][key] = input.checked;
+            } else if (input.type === 'number') {
+              rules[index][key] = parseInt(input.value) || 0;
+            } else {
+              rules[index][key] = input.value;
+            }
+          }
+          updatePreview();
+        });
+      });
+    }
+
+    // 生成 DRL 代码
+    function generateDRL() {
+      const packageName = document.getElementById('packageName').value || 'com.example.rules';
+      const unitName = document.getElementById('unitName').value;
+      const imports = document.getElementById('imports').value.split('\n').filter(line => line.trim());
+      const globals = document.getElementById('globals').value.split('\n').filter(line => line.trim());
+      const declarations = document.getElementById('declarations').value;
+
+      let code = `package ${packageName};\n\n`;
+
+      if (unitName) {
+        code += `unit ${unitName};\n\n`;
+      }
+
+      if (imports.length > 0) {
+        imports.forEach(imp => {
+          code += `${imp.trim()}\n`;
+        });
+        code += `\n`;
+      }
+
+      if (declarations) {
+        code += `${declarations}\n\n`;
+      }
+
+      if (globals.length > 0) {
+        globals.forEach(g => {
+          code += `global ${g.trim()}\n`;
+        });
+        code += `\n`;
+      }
+
+      rules.forEach(rule => {
+        code += `rule "${rule.name}"\n`;
+        if (rule.enabled !== undefined) {
+          code += `    enabled ${rule.enabled}\n`;
+        }
+        if (rule.salience !== undefined) {
+          code += `    salience ${rule.salience}\n`;
+        }
+        if (rule.noLoop) {
+          code += `    no-loop true\n`;
+        }
+        if (rule.lockOnActive) {
+          code += `    lock-on-active true\n`;
+        }
+        code += `when\n`;
+        if (rule.when) {
+          code += `${rule.when}\n`;
+        }
+        code += `then\n`;
+        if (rule.then) {
+          const thenLines = rule.then.split('\n');
+          thenLines.forEach(line => {
+            code += `${line}\n`;
+          });
+        }
+        code += `end\n\n`;
+      });
+
+      return code;
+    }
+
+    // 更新预览
+    function updatePreview() {
+      const code = generateDRL();
+      document.getElementById('codePreview').textContent = code;
+    }
+
+    // 下载 DRL 文件
+    function downloadDRL() {
+      const code = generateDRL();
+      const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `rules-${Date.now()}.drl`;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // 复制代码
+    function copyCode() {
+      const code = generateDRL();
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById('copyBtn');
+        const originalText = btn.textContent;
+        btn.textContent = '已复制！';
+        btn.classList.add('bg-green-600');
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('bg-green-600');
+        }, 2000);
+      }).catch(err => {
+        alert('复制失败: ' + err);
+      });
+    }
+
+    // 初始化
+    init();
+    renderRules();
+  </script>
+</body>
+</html>
+
