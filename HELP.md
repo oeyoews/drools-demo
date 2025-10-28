@@ -56,4 +56,11 @@ Drools 是一组专注于智能自动化和决策管理的项目，其中最引�
 * 13: https://blog.csdn.net/huanglu0314/article/details/118566473?ops_request_misc=%257B%2522request%255Fid%2522%253A%25229590ca0249ccaa1b06932a575948009d%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=9590ca0249ccaa1b06932a575948009d&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-118566473-null-null.nonecase&utm_term=%E7%AC%AC%E5%8D%81%E4%B8%89%E7%AF%87&spm=1018.2226.3001.4450
 * 14: https://blog.csdn.net/huanglu0314/article/details/118566552?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522e21014651f2f407b0485c3503b499a9d%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=e21014651f2f407b0485c3503b499a9d&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-1-118566552-null-null.nonecase&utm_term=%E7%AC%AC%E5%8D%81%E5%9B%9B%E7%AF%87&spm=1018.2226.3001.4450
 
+* https://github.com/gx304419380/dynamic-drools-web
+* https://blog.csdn.net/justlpf/article/details/127010130
+* https://zhuanlan.zhihu.com/p/603826111
+* https://www.cnblogs.com/ityml/p/15993391.html
+
+* go rules: https://editor.gorules.io/
+
 * CSDN 05: https://blog.csdn.net/weixin_53900003/article/details/126935176

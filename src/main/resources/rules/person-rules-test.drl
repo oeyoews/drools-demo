@@ -1,0 +1,16 @@
+// 00 包声明(暂时写死)
+package com.example.rules;
+
+// 01: 导入语句
+import com.example.droolsdemo.model.Person;
+
+// 02: 规则语句
+rule "rule_01"
+    enabled true // 是否启用规则， 默认启用
+    salience 10 // 优先级（优先级别高的先执行)
+when
+    $p: Person($age: age >= 18 )  // 匹配年龄>=18且未标记成年的人
+then
+    $p.setAdult(true);
+    update($p);  // TODO: 支持配置
+end

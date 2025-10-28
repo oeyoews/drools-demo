@@ -56,6 +56,7 @@ public class DroolsConfig {
      * @see KieBuilder
      */
     @Bean
+//    https://blog.csdn.net/huanglu0314/article/details/118567156?ops_request_misc=%257B%2522request%255Fid%2522%253A%25228077ca33e5cbf07002312db6b79cbd25%2522%252C%2522scm%2522%253A%252220140713.130102334.pc%255Fblog.%2522%257D&request_id=8077ca33e5cbf07002312db6b79cbd25&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_ecpm_v1~rank_v31_ecpm-2-118567156-null-null.nonecase&utm_term=%E7%AC%AC%E5%8D%81%E5%85%AD%E7%AF%87&spm=1018.2226.3001.4450
     public KieContainer kieContainer() throws Exception {
         // ① 获取 Drools 核心服务入口点
         // KieServices 提供了工厂方法，用于创建各种 Drools 组件
