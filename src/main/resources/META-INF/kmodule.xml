@@ -1,8 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kmodule xmlns="http://www.drools.org/xsd/kmodule">
+<!--
+    name:指定kbase的名称，可以任意，但是需要唯一
+    packages:指定规则文件的目录，需要根据实际情况填写，否则无法加载到规则文件
+    default:指定当前kbase是否为默认
+-->
 <!-- 定义一个 KieBase（规则库），包含所有 classpath 下的规则文件 -->
 <kbase name="rulesKBase" packages="rules">
     <!-- 定义一个默认会话 -->
+    <!--
+        name:指定ksession名称，可以任意，但是需要唯一
+        default:指定当前session是否为默认
+    -->
     <ksession name="ksession-rules" default="true"/>
 </kbase>
 </kmodule>

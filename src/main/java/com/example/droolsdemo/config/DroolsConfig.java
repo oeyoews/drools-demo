@@ -1,4 +1,4 @@
-package example.droolsdemo.config;
+package com.example.droolsdemo.config;
 
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieFileSystem;

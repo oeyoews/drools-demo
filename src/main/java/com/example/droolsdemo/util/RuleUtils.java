@@ -1,4 +1,4 @@
-package example.droolsdemo.util;
+package com.example.droolsdemo.util;
 
 /**
  * 规则中使用的工具类（封装状态转换等通用方法）

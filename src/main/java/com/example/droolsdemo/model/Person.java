@@ -1,4 +1,4 @@
-package example.droolsdemo.model;
+package com.example.droolsdemo.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

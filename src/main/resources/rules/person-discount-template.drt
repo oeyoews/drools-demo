@@ -1,0 +1,30 @@
+package com.example.droolsdemo.rules;
+
+import com.example.droolsdemo.model.Person;
+import org.slf4j.Logger;
+
+global Logger logger;
+
+template header
+id
+ruleName
+minAge
+maxAge
+discount
+description
+
+template "Discount Rule @{id}"
+
+rule "@{ruleName}"
+    enabled true
+    salience @{id}
+when
+    $p: Person(
+        @{minAge} != null ? age >= @{minAge} : true &&
+        @{maxAge} != null ? age <= @{maxAge} : true
+    )
+then
+    logger.info("@{description}: 用户 {}, 享受 {}{}% 折扣", $p.getName(), @{discount});
+end
+
+end template

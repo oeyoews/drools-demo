@@ -1,4 +1,4 @@
-package example.droolsdemo.controller;
+package com.example.droolsdemo.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -7,7 +7,7 @@ import org.kie.api.runtime.KieSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
-import example.droolsdemo.model.Person;
+import com.example.droolsdemo.model.Person;
 import org.kie.api.runtime.KieSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +35,7 @@ public class TestController {
         people.forEach(kieSession::insert);
         int firedRules = kieSession.fireAllRules(); // 执行所有规则
         log.info("fired rules: {}", firedRules);
-        kieSession.dispose();
+        // kieSession.dispose();
         return p1 + " | " + p2 + " | " + p3;
     }
 }
