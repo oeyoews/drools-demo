@@ -26,7 +26,7 @@ public class TestController {
         this.kieSession = kieSession;
     }
 
-    @GetMapping("/test")
+    @GetMapping("/ruleTest")
     public String testDrools() {
         // 关键：为Drools规则中的全局变量"logger"注入实例
         kieSession.setGlobal("logger", logger);  // 变量名必须与规则中声明的一致
