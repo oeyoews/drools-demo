@@ -75,7 +75,15 @@
 
         const data = await res.json();
 
-        output.textContent = JSON.stringify(data.data, null, 2);
+        // 格式化响应数据，包含版本号
+        const formattedData = {
+          success: data.success,
+          version: data.version,
+          message: data.message,
+          data: data.data
+        };
+
+        output.textContent = JSON.stringify(formattedData, null, 2);
         updateStatus('已完成', 'bg-green-500');
 
         setTimeout(() => {

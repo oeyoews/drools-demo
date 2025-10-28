@@ -22,6 +22,8 @@ import com.example.droolsdemo.util.RuleUtils
 
 // @NOTE: 需要唯一
 rule "CheckAdult"
+//    date-effective "2021-7-09 10:00" // 报错？？？
+//date-expires
     enabled true // 是否启用规则， 默认启用
     salience 10 // 优先级（优先级别高的先执行)
 //    timer
@@ -42,11 +44,15 @@ then
     logger.info("{} 已成年",$p.getName());
     logger.info("{} Test",String.valueOf($age));
     System.out.println($p.getName() + "状态：" + RuleUtils.getStatus(true));
+    System.out.println(drools.getRule());
     // Animal dog = new Animal();
     // dog.setAge(99);
     // insert方法的作用是向工作内存中插入数据，并让相关的规则重新匹配。
     // insert(dog)
     // update方法的作用是更新工作内存中的数据，并让相关的规则重新匹配。 （要避免死循环）
+
+    // retract($p); // 和update 相反, 移除数据
+    // insert(); 插入数据， 并且重新触发
     update($p);  // 更新对象，触发依赖此对象的其他规则
 end
 
@@ -58,7 +64,7 @@ end
  then
      logger.warn("{} 是一个女孩", $p.getName());
      $p.setSex("boy"); // 改变性别
-     update($p); // 继续触发规则
+     update($p); // 继续触发规则, 注意死循环
      // ?? 影响正常执行的规则没有执行
  //    drools.halt(); // 立即终止后面所有规则的执行
  end

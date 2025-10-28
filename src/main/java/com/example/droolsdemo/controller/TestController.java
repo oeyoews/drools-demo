@@ -25,6 +25,9 @@ public class TestController {
     // 通过构造器注入，Spring 会自动从容器中找到 KieSession Bean 并注入
     private final KieSession kieSession;
 
+    /** API 版本号 */
+    private static final String API_VERSION = "1.0.0";
+
     /**
      * 执行 Drools 规则测试
      *
@@ -46,19 +49,19 @@ public class TestController {
 
             // 执行所有规则
             int firedRules = kieSession.fireAllRules();
-            log.info("成功执行 {} 条规则", firedRules);
+            log.info("成功触发并执行了 {} 次规则", firedRules);
 
             long executionTime = System.currentTimeMillis() - startTime;
 
             // 构建响应数据
             RuleTestData data = new RuleTestData(firedRules, people, executionTime);
-            return new RuleTestResponse(true, "规则执行成功", data);
+            return new RuleTestResponse(true, "规则执行成功", data, API_VERSION);
 
         } catch (Exception e) {
             log.error("规则执行失败", e);
             long executionTime = System.currentTimeMillis() - startTime;
             RuleTestData data = new RuleTestData(0, null, executionTime);
-            return new RuleTestResponse(false, "规则执行失败: " + e.getMessage(), data);
+            return new RuleTestResponse(false, "规则执行失败: " + e.getMessage(), data, API_VERSION);
         }
     }
 

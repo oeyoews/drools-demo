@@ -89,7 +89,19 @@ public class DroolsConfig {
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
 
-        // ⑦ 创建并返回 KieContainer Bean
+        // ⑦ 检查编译结果
+        // Drools 的构建结果由 Results 对象包含
+        org.kie.api.builder.Results results = kieBuilder.getResults();
+        if (results.hasMessages(org.kie.api.builder.Message.Level.ERROR)) {
+            // 如果编译失败，打印所有错误信息
+            results.getMessages(org.kie.api.builder.Message.Level.ERROR).forEach(msg -> {
+                System.err.println("✗ 编译错误: " + msg.getText());
+            });
+            throw new IllegalStateException("Drools 规则编译失败，请检查规则文件语法");
+        }
+        System.out.println("✓ Drools 规则编译成功");
+
+        // ⑧ 创建并返回 KieContainer Bean
         // KieContainer 是规则容器，包含了编译后的所有规则
         return kieServices.newKieContainer(kieRepository.getDefaultReleaseId());
     }
