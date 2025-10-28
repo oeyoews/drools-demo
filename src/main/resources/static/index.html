@@ -68,15 +68,22 @@
       runBtn.disabled = true;
       try {
         const res = await fetch('/ruleTest');
-        const text = await res.text();
-        output.textContent = text;
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+        }
+
+        const data = await res.json();
+
+        output.textContent = JSON.stringify(data.data, null, 2);
         updateStatus('已完成', 'bg-green-500');
+
         setTimeout(() => {
           status.textContent = '';
-          statusDot.className = 'w-2 h-2 rounded-full';
+          statusDot.className = 'size-2 rounded-full';
         }, 2000);
       } catch (err) {
-        output.textContent = '请求失败：' + err;
+        output.textContent = '请求失败：' + err.message;
         updateStatus('错误', 'bg-red-500');
       } finally {
         runBtn.disabled = false;

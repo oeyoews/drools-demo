@@ -1,48 +1,77 @@
 package com.example.droolsdemo.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.kie.api.runtime.KieSession;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-import lombok.RequiredArgsConstructor;
 import com.example.droolsdemo.model.Person;
+import com.example.droolsdemo.model.RuleTestData;
+import com.example.droolsdemo.model.RuleTestResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.kie.api.runtime.KieSession;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Drools 规则引擎测试控制器
+ *
+ * @author Demo
+ */
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 public class TestController {
-    private final KieSession kieSession;
-    // 创建当前类的Logger实例（也可注入其他Logger）
-    private static final Logger logger = LoggerFactory.getLogger(TestController.class);
 
-    public TestController(KieSession kieSession) {
-        this.kieSession = kieSession;
+    private final KieSession kieSession;
+
+    /**
+     * 执行 Drools 规则测试
+     *
+     * @return 规则执行结果
+     */
+    @GetMapping("/ruleTest")
+    public RuleTestResponse testDrools() {
+        long startTime = System.currentTimeMillis();
+
+        try {
+            // 为 Drools 规则中的全局变量注入 Logger 实例
+            kieSession.setGlobal("logger", log);
+
+            // 创建测试数据
+            List<Person> people = createTestPeople();
+
+            // 将数据插入到 KieSession
+            people.forEach(kieSession::insert);
+
+            // 执行所有规则
+            int firedRules = kieSession.fireAllRules();
+            log.info("成功执行 {} 条规则", firedRules);
+
+            long executionTime = System.currentTimeMillis() - startTime;
+
+            // 构建响应数据
+            RuleTestData data = new RuleTestData(firedRules, people, executionTime);
+            return new RuleTestResponse(true, "规则执行成功", data);
+
+        } catch (Exception e) {
+            log.error("规则执行失败", e);
+            long executionTime = System.currentTimeMillis() - startTime;
+            RuleTestData data = new RuleTestData(0, null, executionTime);
+            return new RuleTestResponse(false, "规则执行失败: " + e.getMessage(), data);
+        }
     }
 
-    @GetMapping("/ruleTest")
-    public String testDrools() {
-        // 关键：为Drools规则中的全局变量"logger"注入实例
-        kieSession.setGlobal("logger", logger);  // 变量名必须与规则中声明的一致
-        Person p1 = new Person("张华111", 20, "girl"), p2 = new Person("Bob", 158, "girl"), p3 = new Person("God", 9999, "girl");
+    /**
+     * 创建测试人员数据
+     *
+     * @return 人员列表
+     */
+    private List<Person> createTestPeople() {
+        Person p1 = new Person("张华111", 20, "girl");
+        Person p2 = new Person("Bob", 158, "girl");
+        Person p3 = new Person("God", 9999, "girl");
         Person p4 = new Person("linus", 88, "girl");
         Person p5 = new Person("linus4", 889, "boy");
-        List<Person> people = Arrays.asList(p1, p2, p3, p4, p5);
-//        List<Person> people = List.of(p5);
-        people.forEach(kieSession::insert);
-        int firedRules = kieSession.fireAllRules(); // 执行所有规则
-        log.info("fired rules: {}", firedRules);
-        log.info("fired rules: {}", firedRules);
-        // 销毁会话
-        // kieSession.dispose();
-//        return p1 + " | " + p2 + " | " + p3;
-        // return firedRules + " fired rules";
-        return "执行了 " + firedRules + " 条规则。\n结果:\n" + people;
+
+        return List.of(p1, p2, p3, p4, p5);
     }
 }
