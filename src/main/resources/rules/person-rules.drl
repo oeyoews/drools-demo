@@ -17,8 +17,8 @@ end
 global org.slf4j.Logger logger;
 
 // import 同 java import
-import example.droolsdemo.model.Person;
-import example.droolsdemo.util.RuleUtils
+import com.example.droolsdemo.model.Person;
+import com.example.droolsdemo.util.RuleUtils
 
 // @NOTE: 需要唯一
 rule "CheckAdult"
@@ -27,8 +27,8 @@ rule "CheckAdult"
 //    timer
     no-loop true
 when
-    // LHS
-    $p: Person(age >= 18 && age <=9099, adult == false)  // 匹配年龄>=18且未标记成年的人
+    // LHS, 变量(默认以$开始， 和普通变量区分开来),类型/属性约束, 也可以理解为方法传参
+    $p: Person($age: age >= 18 )  // 匹配年龄>=18且未标记成年的人
     // exists(Custom(vip == true))
 // not 语法
 //when
@@ -38,7 +38,9 @@ then
     // yourMethodHere($p)
     // 下面所有的步骤可以单独封装成方法调用.
     $p.setAdult(true);
+//    logger.info("年龄是否大于18: {}", $getAge);
     logger.info("{} 已成年",$p.getName());
+    logger.info("{} Test",String.valueOf($age));
     System.out.println($p.getName() + "状态：" + RuleUtils.getStatus(true));
     // Animal dog = new Animal();
     // dog.setAge(99);
@@ -49,11 +51,12 @@ then
 end
 
 // 检查用户性别
-rule "CheckSex"
-    salience 15
-when
-    $p : Person(sex == "girl")
-then
-    logger.warn("{} 是一个女孩", $p.getName());
-    drools.halt(); // 立即终止后面所有规则的执行
-end
+ rule "CheckSex"
+     salience 15
+ when
+     $p : Person(sex == "girl")
+ then
+     logger.warn("{} 是一个女孩", $p.getName());
+     // ?? 影响正常执行的规则没有执行
+ //    drools.halt(); // 立即终止后面所有规则的执行
+ end

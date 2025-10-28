@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Drools Demo</title>
+  <script src="/tw.js"></script>
+</head>
+<body class="bg-gradient-to-br from-gray-100 to-gray-200 min-h-screen p-6">
+  <div class="w-full max-w-4xl mx-auto space-y-6">
+    <!-- 标题卡片 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">Drools 规则引擎演示</h1>
+      <p class="text-sm text-gray-600">点击按钮调用后端接口，展示规则执行结果。</p>
+    </div>
+
+    <!-- 操作卡片 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">操作控制</h2>
+      <div class="flex gap-3 items-center">
+        <button id="runBtn" class="px-6 py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white rounded-lg hover:from-indigo-700 hover:to-indigo-800 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg font-medium">
+          执行规则
+        </button>
+        <button id="clearBtn" class="px-6 py-3 bg-white text-gray-700 rounded-lg hover:bg-gray-50 active:scale-95 transition-all duration-200 shadow-md hover:shadow-lg border border-gray-300 font-medium">
+          清除结果
+        </button>
+        <div class="ml-auto flex items-center gap-2">
+          <div id="status" class="text-sm text-gray-500"></div>
+          <div id="statusDot" class="w-2 h-2 rounded-full"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 结果展示卡片 -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+      <h2 class="text-lg font-semibold text-gray-700 mb-4">执行结果</h2>
+      <pre id="output" class="whitespace-pre-wrap bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-200 rounded-lg p-4 text-sm text-gray-800 min-h-[200px] font-mono overflow-x-auto"></pre>
+    </div>
+
+    <!-- 说明信息卡片 -->
+    <div class="bg-blue-50 rounded-xl shadow-md p-5 border border-blue-200">
+      <div class="flex items-start gap-3">
+        <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+        </svg>
+        <p class="text-xs text-blue-800 leading-relaxed">
+          确保后端服务在 <code class="bg-blue-100 px-1.5 py-0.5 rounded text-blue-900 font-mono">http://localhost:8080</code> 运行，
+          并且 <code class="bg-blue-100 px-1.5 py-0.5 rounded text-blue-900 font-mono">/test</code> 接口可用。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const runBtn = document.getElementById('runBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const output = document.getElementById('output');
+    const status = document.getElementById('status');
+    const statusDot = document.getElementById('statusDot');
+
+    function updateStatus(text, color) {
+      status.textContent = text;
+      statusDot.className = `w-2 h-2 rounded-full ${color}`;
+    }
+
+    async function callTest() {
+      updateStatus('请求中...', 'bg-yellow-500 animate-pulse');
+      runBtn.disabled = true;
+      try {
+        const res = await fetch('/test');
+        const text = await res.text();
+        output.textContent = text;
+        updateStatus('已完成', 'bg-green-500');
+        setTimeout(() => {
+          status.textContent = '';
+          statusDot.className = 'w-2 h-2 rounded-full';
+        }, 2000);
+      } catch (err) {
+        output.textContent = '请求失败：' + err;
+        updateStatus('错误', 'bg-red-500');
+      } finally {
+        runBtn.disabled = false;
+      }
+    }
+
+    runBtn.addEventListener('click', callTest);
+    clearBtn.addEventListener('click', () => {
+      output.textContent = '';
+      status.textContent = '';
+      statusDot.className = 'w-2 h-2 rounded-full';
+    });
+
+    // 可选：页面加载时自动调用一次
+    // window.addEventListener('load', callTest);
+  </script>
+</body>
+</html>

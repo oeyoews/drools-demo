@@ -1,22 +1,30 @@
-// user-rules-template.drl
-package com.example.rules;
+package com.example.droolsdemo.rules;
 
-import com.example.User; // 导入业务实体类
+import com.example.droolsdemo.model.Person;
+import org.slf4j.Logger;
 
-// 模板定义
+global Logger logger;
+
 template header
-UserRuleTemplate  // 模板名称
+id
+ruleName
+minAge
+maxAge
+sex
+description
 
-rule "UserRule_@{id}"
+template "Dynamic Person Rule @{id}"
+
+rule "@{ruleName}"
+    enabled true
 when
-    $user : User(age > @{minAge}, status == "@{status}")
+    $p: Person(
+        @{minAge} != null ? age >= @{minAge} : true &&
+        @{maxAge} != null ? age <= @{maxAge} : true &&
+        @{sex} != null && @{sex} != "" ? sex == "@{sex}" : true
+    )
 then
-    System.out.println("触发规则: " + @{id} + "，用户年龄: " + $user.getAge());
-end template
+    logger.info("@{description}: " + $p.getName() + " (" + $p.getAge() + "岁)");
+end
 
-// 数据（对应模板中的变量：id, minAge, status）
-data
-1, 18, "ACTIVE"
-2, 30, "INACTIVE"
-3, 25, "ACTIVE"
-end data
+end template
