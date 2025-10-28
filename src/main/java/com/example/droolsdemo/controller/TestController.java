@@ -18,9 +18,11 @@ import java.util.List;
  */
 @Slf4j
 @RestController
-@RequiredArgsConstructor
+@RequiredArgsConstructor  // Lombok 自动生成构造函数，实现依赖注入
 public class TestController {
 
+    // KieSession 来自 org.kie.api.runtime 包（Drools 官方库）
+    // 通过构造器注入，Spring 会自动从容器中找到 KieSession Bean 并注入
     private final KieSession kieSession;
 
     /**

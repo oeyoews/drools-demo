@@ -57,6 +57,17 @@ end
      $p : Person(sex == "girl")
  then
      logger.warn("{} 是一个女孩", $p.getName());
+     $p.setSex("boy"); // 改变性别
+     update($p); // 继续触发规则
      // ?? 影响正常执行的规则没有执行
  //    drools.halt(); // 立即终止后面所有规则的执行
+ end
+
+ rule "boyPlus"
+ when
+    $p : Person(sex == "boy")
+ then
+    logger.warn("trigger boy");
+    $p.setAge($p.getAge() +100);
+    logger.info("年龄增加100");
  end
