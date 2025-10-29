@@ -4,52 +4,52 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>DRL 规则编辑器</title>
-  <script src="/lib/css/tw.js"></script>
+  <script src="/lib/js/tw.js"></script>
   <style>
-    /* 代码高亮样式 */
-    .syntax-keyword { color: #8e44ad; font-weight: bold; }
-    .syntax-string { color: #2ecc71; }
-    .syntax-comment { color: #7f8c8d; font-style: italic; }
-    .syntax-rule-name { color: #e74c3c; font-weight: bold; }
-    .syntax-operator { color: #3498db; }
+    /* 代码高亮样式 - 浅色主题 */
+    .syntax-keyword { color: #7c3aed; font-weight: bold; }
+    .syntax-string { color: #059669; }
+    .syntax-comment { color: #6b7280; font-style: italic; }
+    .syntax-rule-name { color: #dc2626; font-weight: bold; }
+    .syntax-operator { color: #2563eb; }
 
-    /* 滚动条样式 */
+    /* 滚动条样式 - 浅色 */
     #codePreview::-webkit-scrollbar {
       width: 8px;
       height: 8px;
     }
     #codePreview::-webkit-scrollbar-track {
-      background: #1a202c;
+      background: #f1f5f9;
     }
     #codePreview::-webkit-scrollbar-thumb {
-      background: #4a5568;
+      background: #cbd5e1;
       border-radius: 4px;
     }
     #codePreview::-webkit-scrollbar-thumb:hover {
-      background: #5a6578;
+      background: #94a3b8;
     }
   </style>
 </head>
-<body class="bg-gray-50 min-h-screen p-4">
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-slate-50 min-h-screen p-4">
   <div class="max-w-7xl mx-auto space-y-4">
     <!-- 标题 -->
-    <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+    <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm p-4 border border-slate-200">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
         <div>
-          <h1 class="text-2xl font-bold text-gray-800">DRL 规则编辑器</h1>
+          <h1 class="text-2xl font-bold bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent">DRL 规则编辑器</h1>
           <p class="text-sm text-gray-600">可视化生成 Drools 规则文件</p>
         </div>
         <div class="flex flex-wrap gap-2">
-          <button id="sampleBtn" class="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 transition font-medium text-sm">
+          <button id="sampleBtn" class="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-all font-medium text-sm shadow-sm hover:shadow">
             加载示例
           </button>
-          <button id="downloadBtn" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition font-medium text-sm">
+          <button id="downloadBtn" class="px-4 py-2 bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all font-medium text-sm shadow-sm hover:shadow">
             下载 DRL 文件
           </button>
-          <button id="copyBtn" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition font-medium text-sm">
+          <button id="copyBtn" class="px-4 py-2 bg-sky-500 text-white rounded-lg hover:bg-sky-600 transition-all font-medium text-sm shadow-sm hover:shadow">
             复制代码
           </button>
-          <a href="/" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition font-medium text-sm">
+          <a href="/" class="px-4 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 transition-all font-medium text-sm shadow-sm hover:shadow">
             返回首页
           </a>
         </div>
@@ -60,37 +60,37 @@
       <!-- 左侧：规则配置表单 -->
       <div class="space-y-4">
         <!-- 全局配置 -->
-        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm p-4 border border-slate-200">
           <h2 class="text-lg font-semibold text-gray-700 mb-3">全局配置</h2>
           <div class="space-y-3">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">包名 (package)</label>
-              <input type="text" id="packageName" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" value="com.example.rules">
+              <input type="text" id="packageName" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition" value="com.example.rules">
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Unit 名称 (可选)</label>
-              <input type="text" id="unitName" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如: PersonRules">
+              <input type="text" id="unitName" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition" placeholder="例如: PersonRules">
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">导入语句 (每行一个)</label>
-              <textarea id="imports" rows="4" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;import com.example.droolsdemo.model.Person;&#10;import com.example.droolsdemo.util.RuleUtils;&#10;import java.util.List;"></textarea>
+              <textarea id="imports" rows="4" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition font-mono text-sm" placeholder="例如:&#10;import com.example.droolsdemo.model.Person;&#10;import com.example.droolsdemo.util.RuleUtils;&#10;import java.util.List;"></textarea>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">全局变量 (每行一个)</label>
-              <textarea id="globals" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;global org.slf4j.Logger logger;&#10;global java.util.Map dataMap;"></textarea>
+              <textarea id="globals" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition font-mono text-sm" placeholder="例如:&#10;global org.slf4j.Logger logger;&#10;global java.util.Map dataMap;"></textarea>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">声明类型 (declare, 可选)</label>
-              <textarea id="declarations" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="例如:&#10;declare Animal&#10;    name: String&#10;    age: int&#10;end"></textarea>
+              <textarea id="declarations" rows="3" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-400 focus:border-sky-400 transition font-mono text-sm" placeholder="例如:&#10;declare Animal&#10;    name: String&#10;    age: int&#10;end"></textarea>
             </div>
           </div>
         </div>
 
         <!-- 规则列表 -->
-        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm p-4 border border-slate-200">
           <div class="flex justify-between items-center mb-3">
             <h2 class="text-lg font-semibold text-gray-700">规则列表</h2>
-            <button id="addRuleBtn" class="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition">
+            <button id="addRuleBtn" class="px-3 py-1 bg-indigo-500 text-white text-sm rounded-lg hover:bg-indigo-600 transition-all shadow-sm hover:shadow font-medium">
               + 添加规则
             </button>
           </div>
@@ -100,9 +100,9 @@
 
       <!-- 右侧：代码预览和帮助 -->
       <div class="space-y-4">
-        <div class="bg-white rounded-lg shadow p-4 border border-gray-200">
+        <div class="bg-white/90 backdrop-blur-sm rounded-lg shadow-sm p-4 border border-slate-200">
           <h2 class="text-lg font-semibold text-gray-700 mb-3">DRL 代码预览</h2>
-          <pre id="codePreview" class="bg-gray-900 text-gray-100 p-4 rounded overflow-x-auto text-sm font-mono min-h-[400px] max-h-[600px]"></pre>
+          <pre id="codePreview" class="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-300 text-slate-800 p-4 rounded overflow-x-auto text-sm font-mono min-h-[400px] max-h-[600px] shadow-inner"></pre>
         </div>
 
         <!-- 帮助说明 -->
@@ -239,11 +239,11 @@
 
       rules.forEach((rule, index) => {
         const ruleDiv = document.createElement('div');
-        ruleDiv.className = 'border border-gray-300 rounded-lg p-4 bg-white shadow-sm hover:shadow transition';
+        ruleDiv.className = 'border border-slate-200 rounded-lg p-4 bg-gradient-to-br from-white to-slate-50 shadow-sm hover:shadow-md transition-all';
         ruleDiv.innerHTML = `
           <div class="flex justify-between items-center mb-2">
-            <input type="text" class="rule-name flex-1 px-2 py-1 border border-gray-300 rounded text-sm" value="${rule.name}" data-index="${index}">
-            <button class="delete-rule ml-2 px-2 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600" data-index="${index}">删除</button>
+            <input type="text" class="rule-name flex-1 px-2 py-1 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400" value="${rule.name}" data-index="${index}">
+            <button class="delete-rule ml-2 px-2 py-1 bg-rose-400 text-white text-xs rounded-lg hover:bg-rose-500 transition-all shadow-sm" data-index="${index}">删除</button>
           </div>
           <div class="space-y-2">
             <div class="grid grid-cols-3 gap-2 text-xs">
@@ -262,15 +262,15 @@
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">优先级 (salience)</label>
-              <input type="number" class="w-full px-2 py-1 border border-gray-300 rounded text-sm" data-index="${index}" data-key="salience" value="${rule.salience}">
+              <input type="number" class="w-full px-2 py-1 border border-slate-300 rounded-md text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400" data-index="${index}" data-key="salience" value="${rule.salience}">
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">When 条件</label>
-              <textarea rows="2" class="w-full px-2 py-1 border border-gray-300 rounded text-sm font-mono" data-index="${index}" data-key="when">${rule.when}</textarea>
+              <textarea rows="2" class="w-full px-2 py-1 border border-slate-300 rounded-md text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:border-sky-400" data-index="${index}" data-key="when">${rule.when}</textarea>
             </div>
             <div>
               <label class="block text-xs font-medium text-gray-700 mb-1">Then 动作</label>
-              <textarea rows="3" class="w-full px-2 py-1 border border-gray-300 rounded text-sm font-mono" data-index="${index}" data-key="then">${rule.then}</textarea>
+              <textarea rows="3" class="w-full px-2 py-1 border border-slate-300 rounded-md text-sm font-mono focus:ring-2 focus:ring-sky-400 focus:border-sky-400" data-index="${index}" data-key="then">${rule.then}</textarea>
             </div>
           </div>
         `;
@@ -394,10 +394,10 @@
         const btn = document.getElementById('copyBtn');
         const originalText = btn.textContent;
         btn.textContent = '已复制！';
-        btn.classList.add('bg-green-600');
+        btn.classList.add('bg-emerald-600');
         setTimeout(() => {
           btn.textContent = originalText;
-          btn.classList.remove('bg-green-600');
+          btn.classList.remove('bg-emerald-600');
         }, 2000);
       }).catch(err => {
         alert('复制失败: ' + err);
